@@ -4,6 +4,15 @@ import torch.nn.functional as F
 import numpy as np
 from collections import OrderedDict
 
+
+class PatchEmbedding(nn.Module): # pretty overkill, but need this structure in order to load image-models weights
+    def __init__(self, patch_size, in_channels, dim):
+        self.proj = nn.Conv2d(in_channels=in_channels, out_channels=dim, kernel_size=patch_size, stride=patch_size)
+        
+    def forward(self, x):
+        out = self.proj(x)
+        return out
+
 class MLP(nn.Sequential):
     def __init__(self, dim, ff_dim, dropout):
         super().__init__()

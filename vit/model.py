@@ -6,6 +6,7 @@ from collections import OrderedDict
 
 from vit.network import *
 
+
 class VisionTransformer(nn.Module):
     def __init__(self, **params):
         super().__init__()
@@ -29,7 +30,7 @@ class VisionTransformer(nn.Module):
         self.seq_len = self.embed_height * self.embed_width + 1 # add one here for token
         
         # network structure
-        self.patch_embed = nn.Conv2d(in_channels=self.input_channels, out_channels=self.dim, kernel_size=self.patch_size, stride=self.patch_size)
+        self.patch_embed = PatchEmbedding(self.patch_size, 3, self.dim)
         self.cls_token = nn.Parameter(torch.zeros(1, 1, self.dim))
         self.pos_embed = nn.Parameter(torch.zeros(1, self.seq_len, self.dim))
         self.blocks = nn.Sequential(*[
