@@ -4,7 +4,7 @@
 `torch_model.py` & `torch_network.py`: Vision Transformer implemented using nn.MultiheadAttention, compatible with torchvision.models pretrained weights
 
 ## Image Models
-`model.py` & `network.py`: Vision Transformer implemented from scratch, compatible with timm pretrained weights (github/rwightman/pytorch-image-models) 
+`model.py` & `network.py`: Vision Transformer implemented from scratch, compatible with timm pretrained weights (github/rwightman/pytorch-image-models) <br>
 **example**
 ```
 import timm
