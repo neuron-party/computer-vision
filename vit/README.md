@@ -1,24 +1,29 @@
 # Vision Transformers
 
 ## Network Structure
-`patch_embedding`: <br>
+`patch_embedding` :
 convert image of size (b, c, h, w) into patches (b, d, ph, pw), flatten into 2d matrix of shape (b, s, d) <br>
 * s : sequence length = (h / ph) * (w / pw)
-* d : dimension = out_channels in convolutional layer
-`cls_token`: <br>
+* d : dimension = out_channels in convolutional layer <br>
+
+`cls_token` :
 concatenates a learnable nn.Parameter() tensor of size (1, s, d) to input matrix, gathers information of patch embeddings when fed through the Encoder
-* s = s + 1
-`pos_embedding`: <br>
-add optional learnable nn.Parameter() tensor of size (1, s, d) to input matrix
-`encoder` <br>
+* s = s + 1 <br>
+
+`pos_embedding` :
+add optional learnable nn.Parameter() tensor of size (1, s, d) to input matrix <br>
+
+`encoder` :
 layernorm -> multiheaded self attention -> layernorm -> feed forward mlp <br>
-**MHSA** <br>
-* linear projection of input matrix -> q k v
-* query @ key -> scores @ values -> attention-applied output
-* intuition: network learns the optimal projection weights in applying more/less attention to certain patches in differentiating classes
-`mlp-head`: <br>
-takes attention-encoded cls token and outputs classification predictions
-`fine-tuning`: <br>
+* MHSA 
+    * linear projection of input matrix -> q k v
+    * query @ key -> scores @ values -> attention-applied output
+    * intuition: network learns the optimal projection weights in applying more/less attention to certain patches in differentiating classes <br>
+
+`mlp-head` :
+takes attention-encoded cls token and outputs classification predictions <br>
+
+`fine-tuning` :
 additional linear layer with desired num_classes as output dimension
 
 ## PyTorch Models
