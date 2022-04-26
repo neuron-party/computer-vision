@@ -10,7 +10,7 @@ from vit.network import *
 class VisionTransformer(nn.Module):
     def __init__(self, **params):
         super().__init__()
-        # static
+        # static skeleton
         self.input_channels = params['input_channels']
         self.dim = params['dim']
         self.hidden_dim = params['hidden_dim']
@@ -22,7 +22,10 @@ class VisionTransformer(nn.Module):
         self.num_heads = params['num_heads']
         self.num_classes = params['num_classes']
         
-        self.fine_tune = params['fine_tune']
+        # static optional
+        self.ft_classes = params['ft_classes']
+        self.encoder_norm = params['encoder_norm']
+        self.fc_norm = params['fc_norm']
         
         # dynamic
         self.embed_height = self.img_size // self.patch_size
@@ -36,10 +39,10 @@ class VisionTransformer(nn.Module):
         self.blocks = nn.Sequential(*[
             EncoderBlock(self.dim, self.hidden_dim, self.num_heads, self.dropout, self.attention_dropout) for i in range(self.num_layers)
         ])
+        self.norm = nn.LayerNorm(self.dim, eps=1e-6) if self.encoder_norm else nn.Identity()
+        self.fc_norm = nn.LayerNorm(self.dim, eps=1e-6) if self.fc_norm else nn.Identity()
         self.head = nn.Linear(self.dim, self.num_classes)
-        
-        if self.fine_tune is not None:
-            self.ft = nn.Linear(self.num_classes, self.fine_tune) # fine_tune is the modified num classes
+        self.ft_layer = nn.Linear(self.num_classes, self.ft_classes) if self.ft_classes else nn.Identity()
         
     def process_input(self, x):
         # inputs are of shape (b, c, h, w)
@@ -57,14 +60,14 @@ class VisionTransformer(nn.Module):
         token = self.cls_token.expand(b, -1, -1)
         x = torch.cat([token, x], dim=1)
         x = x + self.pos_embed
+        
         x = self.blocks(x)
+        x = self.norm(x)
         
         # extract token
         x = x[:, 0]
-        out = self.head(x)
+        x = self.fc_norm(x)
+        x = self.head(x)
+        out = self.ft_layer(x)
         
-        # readjust to fine tuning dataset
-        if self.fine_tune is not None:
-            out = self.ft(out)
-            
         return out

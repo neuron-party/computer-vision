@@ -36,13 +36,12 @@ from vit.torch_model import *
 
 device = torch.device('cuda:0')
 weights = vit_b_16(pretrained=True)
-weights = weights.to(device)
-torch.save(weights.state_dict(), PATH)
+weights = weights.state_dict()
 
 params = {'input_channels':3, 'dim':768, 'hidden_dim':3072, 'patch_size':16, 'img_size':224, 'num_layers':12, 
           'dropout':0.0, 'attention_dropout':0.0, 'num_heads':12, 'fine_tune':10, 'num_classes':21843}
 model = PTVisionTransformer(**params)
-model.load_state_dict(torch.load(PATH, map_location=device), strict=False) # strict=False because some weights are unnecessary
+model.load_state_dict(weights, strict=False) # strict=False because some weights are unnecessary
 ```
 
 ## Image Models
@@ -55,13 +54,13 @@ from vit.model import *
 
 device = torch.device('cuda:0')
 weights = timm.create_model('vit_base_patch16_224_in21k', pretrained=True)
-weights = weights.to(device)
-torch.save(weights.state_dict(), PATH)
+weights = weight.state_dict()
 
 params = {'input_channels':3, 'dim':768, 'hidden_dim':3072, 'patch_size':16, 'img_size':224, 'num_layers':12, 
           'dropout':0.0, 'attention_dropout':0.0, 'num_heads':12, 'fine_tune':10, 'num_classes':21843}
 model = VisionTransformer(**params)
-model.load_state_dict(torch.load(PATH, map_location=device), strict=False) # strict=False because some weights are unnecessary
+model.load_state_dict(weights)
+model = model.to(device)
 ```
 **Modified MLP Head**
 ```
@@ -69,13 +68,13 @@ import ...
 
 device = torch.device('cuda:0')
 weights = timm.create_model('vit_base_patch16_224_in21k', pretrained=True, num_classes=100)
-weights = weights.to(device)
-torch.save(weights.state_dict(), PATH)
+weights = weights.state_dict()
 
 params = {'input_channels':3, 'dim':768, 'hidden_dim':3072, 'patch_size':16, 'img_size':224, 'num_layers':12, 
           'dropout':0.0, 'attention_dropout':0.0, 'num_heads':12, 'fine_tune':None, 'num_classes':100}
 model = VisionTransformer(**params)
-model.load_state_dict(torch.load(PATH, map_location=device), strict=False) # strict=False because some weights are unnecessary
+model.load_state_dict(state_dict)
+model = model.to(device)
 ```
 ## Benchmarks:
 none yet, still working on this
