@@ -19,6 +19,7 @@ class PTVisionTransformer(nn.Module):
         self.num_layers = params['num_layers']
         self.num_heads = params['num_heads']
         self.num_classes = params['num_classes']
+        self.representation_layer = params['representation_layer']
         
         self.fine_tune = params['fine_tune']
         
@@ -31,10 +32,17 @@ class PTVisionTransformer(nn.Module):
         self.conv_proj = nn.Conv2d(in_channels=self.input_channels, out_channels=self.dim, kernel_size=self.patch_size, stride=self.patch_size)
         self.class_token = nn.Parameter(torch.zeros(1, 1, self.dim))
         self.encoder = Encoder(self.seq_len, self.num_layers, self.dim, self.hidden_dim, self.num_heads, self.dropout, self.attention_dropout)
-        self.heads = nn.Linear(self.dim, self.num_classes)
         
-        if self.fine_tune is not None:
-            self.ft = nn.Linear(self.num_classes, self.fine_tune) # fine_tune is the modified num classes
+        self.head_layers = OrderedDict()
+        if self.representation_layer is None:
+            self.head_layers['head'] = nn.Linear(self.dim, self.num_classes)
+        # else...
+            # pre logits, etc
+        
+        self.heads = nn.Sequential(self.head_layers) 
+        
+        # fine_tune is the modified num classes
+        self.fine_tune = nn.Linear(self.num_classes, self.fine_tune) if self.fine_tune else nn.Identity()
         
     def process_input(self, x):
         # inputs are of shape (b, c, h, w)
@@ -56,9 +64,6 @@ class PTVisionTransformer(nn.Module):
         # extract token
         x = x[:, 0]
         out = self.heads(x)
-        
-        # readjust to fine tuning dataset
-        if self.fine_tune is not None:
-            out = self.ft(out)
+        out = self.fine_tune(out)
             
         return out
