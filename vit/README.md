@@ -2,12 +2,12 @@
 
 ## Network Structure
 ![alt text](https://www.researchgate.net/publication/348947034/figure/fig2/AS:986572736446471@1612228678819/The-Vision-Transformer-architecture-a-the-main-architecture-of-the-model-b-the.png) <br>
-`patch-encoding`: divide image into 16x16 non overlapping patches and flatten into 2d matrix <br>
-`cls-token`: concatenates a tensor of learnable parameters as input for mlp head <br>
-`positional-embedding`: adds learnable positional embeddings to each patch <br>
-`multihead-self-attention`: applies attention to the image matrix, calculated by dotting queries and keys, scaling + softmax, and dotting with values <br>
-`mlp`: feed forward network <br>
-`mlp-head:` linear layer mapping from hidden dimension to number of classes
+**patch-encoding:** divide image into 16x16 non overlapping patches and flatten into 2d matrix <br>
+**cls-token:** concatenates a tensor of learnable parameters as input for mlp head <br>
+**positional-embedding:** adds learnable positional embeddings to each patch <br>
+**multihead-self-attention:** applies attention to the image matrix, calculated by dotting queries and keys, scaling + softmax, and dotting with values <br>
+**mlp:** feed forward network <br>
+**mlp-head:** linear layer mapping from hidden dimension to number of classes
 
 ## PyTorch Models
 `torch_model.py` & `torch_network.py`: Vision Transformer implemented using nn.MultiheadAttention, compatible with torchvision.models pretrained weights <br>
