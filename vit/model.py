@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import numpy as np
 from collections import OrderedDict
 
 from vit.network import *
@@ -10,7 +9,7 @@ from vit.network import *
 class VisionTransformer(nn.Module):
     def __init__(self, **params):
         super().__init__()
-        # static skeleton
+        # static 
         self.input_channels = params['input_channels']
         self.dim = params['dim']
         self.hidden_dim = params['hidden_dim']

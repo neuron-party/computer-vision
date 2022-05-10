@@ -2,7 +2,6 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-   
 '''
 - pytorch bottleneck architecture applies stride in conv3x3 with stride=2 and padding=1
 - other architectures apply stride in 1st conv1x1 with stride=2 and padding = 0
@@ -21,6 +20,7 @@ import torch.nn.functional as F
     - conv3x3: ...
     - conv1x1: dimension restoration
 '''
+
 
 class Bottleneck(nn.Module):
     def __init__(self, in_dim, out_dim, expansion, stride, padding, downsample=False):

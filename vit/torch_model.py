@@ -5,6 +5,7 @@ from collections import OrderedDict
 
 from vit.torch_network import *
 
+
 class PTVisionTransformer(nn.Module):
     def __init__(self, **params):
         super().__init__()

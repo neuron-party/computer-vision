@@ -4,25 +4,29 @@ import torch.nn as nn
 import torch.nn.functional as F
 from resnet.torch_network import *
 
+
 class ResNet(nn.Module):
     def __init__(self, **params):
         super().__init__()
         
         self.dim = params['dim']
         self.expansion = params['expansion']
+        self.in_channels = params['in_channels']
         self.num_classes = params['num_classes']
+        self.num_layers = params['num_layers']
+        self.layer_dims = params['layer_dims']
         
-        # parameters from resnet paper
+        # static parameters from resnet paper
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=self.dim, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(self.dim)
-        self.relu = nn.ReLU()
+        self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         
         # bottleneck layers
-        self.layer1 = self._build_layer(num_layers=3, out_dim=64, stride=1, padding=1) 
-        self.layer2 = self._build_layer(num_layers=4, out_dim=128, stride=2, padding=1)
-        self.layer3 = self._build_layer(num_layers=6, out_dim=256, stride=2, padding=1)
-        self.layer4 = self._build_layer(num_layers=3, out_dim=512, stride=2, padding=1)
+        self.layer1 = self._build_layer(num_layers=self.num_layers[0], out_dim=self.layer_dims[0], stride=1, padding=1) 
+        self.layer2 = self._build_layer(num_layers=self.num_layers[1], out_dim=self.layer_dims[1], stride=2, padding=1)
+        self.layer3 = self._build_layer(num_layers=self.num_layers[2], out_dim=self.layer_dims[2], stride=2, padding=1)
+        self.layer4 = self._build_layer(num_layers=self.num_layers[3], out_dim=self.layer_dims[3], stride=2, padding=1)
         
         # pool/fc
         self.adapool = nn.AdaptiveAvgPool2d((1, 1))
@@ -46,33 +50,6 @@ class ResNet(nn.Module):
         return out
          
     def _build_layer(self, num_layers, out_dim, stride, padding):
-        '''
-        layer1: (no image reduction)
-            in_dim: 64
-            out_dim: 64
-            stride: 1
-            padding: 0
-        
-        layer2: 56 -> 28
-            in_dim: 256
-            out_dim: 128
-            stride: 2
-            padding: 1
-            
-        layer3: 28 -> 14
-            in_dim: 516
-            out_dim: 256
-            stride; 2
-            padding: 1
-        
-        layer4: 14 -> 7
-            in_dim: 1028
-            out_dim: 512
-            stride: 2
-            padding: 1
-            
-        AdaptiveAvgPool2d: 7 -> 1
-        '''
         # apply stride (image shape reduction) in first bottleneck block of each layer
         layers = []
         layers.append(
