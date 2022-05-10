@@ -36,9 +36,12 @@ class VisionTransformer(nn.Module):
         self.patch_embed = PatchEmbedding(self.patch_size, 3, self.dim)
         self.cls_token = nn.Parameter(torch.zeros(1, 1, self.dim))
         self.pos_embed = nn.Parameter(torch.zeros(1, self.seq_len, self.dim))
+        
+        # sequential vs module list?
         self.blocks = nn.Sequential(*[
             EncoderBlock(self.dim, self.hidden_dim, self.num_heads, self.dropout, self.attention_dropout) for i in range(self.num_layers)
         ])
+        
         self.norm = nn.LayerNorm(self.dim, eps=1e-6) if self.encoder_norm else nn.Identity()
         self.fc_norm = nn.LayerNorm(self.dim, eps=1e-6) if self.fc_norm else nn.Identity()
         self.head = nn.Linear(self.dim, self.num_classes)

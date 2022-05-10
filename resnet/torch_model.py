@@ -2,6 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from resnet.torch_network import *
 
 class ResNet(nn.Module):
     def __init__(self, **params):
