@@ -16,6 +16,11 @@ class ResNet(nn.Module):
         self.num_layers = params['num_layers']
         self.layer_dims = params['layer_dims']
         
+        if params['layer_type'] == 'bottleneck':
+            self.bottleneck = True
+        else:
+            self.bottleneck = False
+        
         # static parameters from resnet paper
         self.conv1 = nn.Conv2d(in_channels=3, out_channels=self.dim, kernel_size=7, stride=2, padding=3, bias=False)
         self.bn1 = nn.BatchNorm2d(self.dim)
@@ -23,14 +28,14 @@ class ResNet(nn.Module):
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
         
         # bottleneck layers
-        self.layer1 = self._build_layer(num_layers=self.num_layers[0], out_dim=self.layer_dims[0], stride=1, padding=1) 
-        self.layer2 = self._build_layer(num_layers=self.num_layers[1], out_dim=self.layer_dims[1], stride=2, padding=1)
-        self.layer3 = self._build_layer(num_layers=self.num_layers[2], out_dim=self.layer_dims[2], stride=2, padding=1)
-        self.layer4 = self._build_layer(num_layers=self.num_layers[3], out_dim=self.layer_dims[3], stride=2, padding=1)
+        self.layer1 = self._build_layer(num_layers=self.num_layers[0], out_dim=self.layer_dims[0], stride=1, padding=1, bottleneck=self.bottleneck) 
+        self.layer2 = self._build_layer(num_layers=self.num_layers[1], out_dim=self.layer_dims[1], stride=2, padding=1, bottleneck=self.bottleneck)
+        self.layer3 = self._build_layer(num_layers=self.num_layers[2], out_dim=self.layer_dims[2], stride=2, padding=1, bottleneck=self.bottleneck)
+        self.layer4 = self._build_layer(num_layers=self.num_layers[3], out_dim=self.layer_dims[3], stride=2, padding=1, bottleneck=self.bottleneck)
         
         # pool/fc
         self.adapool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(2048, self.num_classes)
+        self.fc = nn.Linear(self.dim, self.num_classes)
         
     def forward(self, x):
         x = self.conv1(x)
@@ -49,17 +54,30 @@ class ResNet(nn.Module):
         
         return out
          
-    def _build_layer(self, num_layers, out_dim, stride, padding):
-        # apply stride (image shape reduction) in first bottleneck block of each layer
+    def _build_layer(self, num_layers, out_dim, stride, padding, bottleneck=False):
         layers = []
-        layers.append(
-            Bottleneck(in_dim=self.dim, out_dim=out_dim, expansion=self.expansion, stride=stride, padding=padding, downsample=True)
-        )
         
-        self.dim = self.expansion * out_dim # dimension expansion
-        for i in range(1, num_layers):
+        # BOTTLENECK ARCHITECTURE FOR RESNT50+
+        if bottleneck:
+            # apply stride (image shape reduction) in first bottleneck block of each layer
             layers.append(
-                Bottleneck(in_dim=self.dim, out_dim=out_dim, expansion=self.expansion, stride=1, padding=padding)
+                Bottleneck(in_dim=self.dim, out_dim=out_dim, expansion=self.expansion, stride=stride, padding=padding, downsample=True)
             )
+
+            self.dim = self.expansion * out_dim # dimension expansion
+            for i in range(1, num_layers):
+                layers.append(
+                    Bottleneck(in_dim=self.dim, out_dim=out_dim, expansion=self.expansion, stride=1, padding=padding)
+                )
+        # BASIC BLOCKS FOR < RESNET50       
+        else:
+            layers.append(
+                Block(in_dim=self.dim, out_dim=out_dim, stride=stride, padding=padding, downsample=True)
+            )
+            self.dim = out_dim # no expansion in basic blocks
+            for i in range(1, num_layers):
+                layers.append(
+                    Block(in_dim=self.dim, out_dim=out_dim, stride=1, padding=1)
+                )
             
         return nn.Sequential(*layers)
