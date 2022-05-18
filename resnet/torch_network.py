@@ -65,15 +65,15 @@ class Block(nn.Module):
         self.downsample = downsample
         
         # layers
-        self.conv1 = nn.Conv2d(in_channels=in_dim, out_channels=out_dim, kernel_size=3, stride=stride, padding=padding, bias=False) # image downsizing
+        self.conv1 = nn.Conv2d(in_channels=in_dim, out_channels=out_dim, kernel_size=3, stride=stride, bias=False) # image downsizing
         self.bn1 = nn.BatchNorm2d(out_dim)
-        self.conv2 = nn.Conv2d(in_channels=out_dim, out_channels=out_dim, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv2 = nn.Conv2d(in_channels=out_dim, out_channels=out_dim, kernel_size=3, stride=1, padding=padding, bias=False)
         self.bn2 = nn.BatchNorm2d(out_dim)
         self.relu = nn.ReLU(inplace=True)
         
         if downsample:
             self.downsample = nn.Sequential(
-                nn.Conv2d(in_channels=in_dim, out_channels=out_dim, kernel_size=3, stride=stride, padding=padding, bias=False), # image downsizing
+                nn.Conv2d(in_channels=in_dim, out_channels=out_dim, kernel_size=1, stride=stride, bias=False), # image downsizing
                 nn.BatchNorm2d(out_dim)
             )
             
@@ -88,3 +88,9 @@ class Block(nn.Module):
         out += identity
         out = self.relu(out)
         return out
+    
+# to do:
+# 1. stochastic depth
+# 2. zero init
+# 3. other upgrades when applicable
+
