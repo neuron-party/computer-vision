@@ -20,7 +20,7 @@ class CNBlock(nn.Module): # 96, 192, 384, 768 / 3 3 9 3
         
         self.downsample = downsample
         
-        self.conv1 = nn.Conv2d(in_channels=in_dim, out_channels=in_dim, kernel_size=7, stride=1, padding=3, bias=True)
+        self.conv1 = nn.Conv2d(in_channels=in_dim, out_channels=in_dim, kernel_size=7, stride=1, padding=3, groups=in_dim, bias=True)
         self.ln = LayerNorm2d(in_dim)
         self.conv2 = nn.Conv2d(in_channels=in_dim, out_channels=in_dim * expansion, kernel_size=1, stride=1, bias=True)
         self.gelu = nn.GELU()
