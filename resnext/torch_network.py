@@ -127,12 +127,11 @@ class Bottleneck3(nn.Module):
         self.downsample = downsample
         self.expansion = expansion # 4
         
-        width = int(out_dim * (width_per_group / 64.0) * num_groups) # [128, 256, 512, 1048]\
-        bottleneck_width = int((out_dim * 2) / num_groups)
+        width = int((out_dim * (width_per_group / 64.0)) * num_groups) # [128, 256, 512, 1048]
         
         self.conv1 = nn.Conv2d(in_channels=in_dim, out_channels=width, kernel_size=1, stride=1, bias=False)
         self.bn1 = nn.BatchNorm2d(width)
-        self.conv2 = nn.Conv2d(in_channels=width, out_channels=width, kernel_size=3, stride=stride, padding=padding, bias=False) # downsizing
+        self.conv2 = nn.Conv2d(in_channels=width, out_channels=width, kernel_size=3, stride=stride, padding=padding, groups=num_groups, bias=False) # downsizing
         self.bn2 = nn.BatchNorm2d(width)
         self.conv3 = nn.Conv2d(in_channels=width, out_channels=out_dim * expansion, kernel_size=1, stride=1, bias=False)
         self.bn3 = nn.BatchNorm2d(out_dim * expansion)
