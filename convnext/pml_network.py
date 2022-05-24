@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from convnext.layernorm2d import LayerNorm2d
+from utils.layernorm2d import LayerNorm2d
 
 # pml models currently do not have 1-1 loading with pretrained weights 
 # most convnext models do not follow the original paper architecture exactly 

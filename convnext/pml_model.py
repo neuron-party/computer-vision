@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from convnext.pml_network import *
-from convnext.layernorm2d import LayerNorm2d
+from utils.layernorm2d import LayerNorm2d
 
 
 class ConvNext(nn.Module):
