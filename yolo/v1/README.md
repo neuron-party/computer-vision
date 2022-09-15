@@ -1,3 +1,3 @@
 # YOLO v1
 
-```todo```: add resnet50 variant?
+```todo```: resnet50 variant, fast yolo
