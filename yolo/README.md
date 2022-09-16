@@ -2,8 +2,9 @@
 
 **Finished:**
 * YOLOv1
-    * darknet: ```mAP: 63.4```
-    * resnet: ```???```
+    * darknet: 
+    * resnet: 
 
 **In Progress:**
 * YOLOv3
+* YOLOv4
