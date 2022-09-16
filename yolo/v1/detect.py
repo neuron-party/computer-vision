@@ -33,10 +33,8 @@ class YOLOv1_Detector:
         
     def decode(self, x: torch.Tensor):
         '''
-        Input:
-            Tensor of shape [1, 7, 7, 30]
-        Output:
-            List: [bounding_boxes, class, confs]
+        Input: Tensor of shape [1, 7, 7, 30]
+        Output: List: [bounding_boxes, class, confs]
         '''
         bounding_boxes, classes, confs = [], [], []
         
