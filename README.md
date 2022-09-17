@@ -22,4 +22,4 @@
 utils/
 ```
 
-reorganize these directories in the future
+testing from new mac
