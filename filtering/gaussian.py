@@ -13,8 +13,7 @@ def getGaussianKernel(kernel_size: int, sigma: float):
             x = x / (2 * sigma ** 2)
             x = np.exp(-x)
             x = x / (2 * np.pi * sigma ** 2)
-            kernel[i - 1, j - 1] = x
-            
+            kernel[i - 1, j - 1] = x   
     return kernel
 
 
